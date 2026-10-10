@@ -1,0 +1,11 @@
+[project]
+name = "network-watcher"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "pysqlite3>=0.6.1",
+    "pythonping>=1.1.4",
+    "streamlit>=1.65.0",
+]
