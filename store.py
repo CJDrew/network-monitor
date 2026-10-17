@@ -1,6 +1,7 @@
 import sqlite3
 from scanner import scan_result
 from dataclasses import astuple
+import pandas as pd
 
 class store:
     def __init__(self, name: str):
@@ -18,6 +19,7 @@ class store:
         cursor.execute('INSERT INTO scan_results (timestamp, loss_pct, avg_ms, min_ms, max_ms) VALUES (?, ?, ?, ?, ?)', (time,) + astuple(obs))
         self.con.commit()
 
-    def get_observations(self):
-        cursor = self.con.cursor()
-        cursor.execute('SELECT * FROM scan_results')
+    def get_observations(self, time_since: str):
+        sql = f'SELECT * FROM scan_results where timestamp >= \'{time_since}\'' #sql injection
+        df = pd.read_sql_query(sql, self.con)
+        return df

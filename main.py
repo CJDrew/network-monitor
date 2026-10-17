@@ -12,7 +12,7 @@ def main():
         time = datetime.now(tz=ZoneInfo('America/Los_Angeles')).isoformat()
         db.add_observation(scan_result, time)
         print(scan_result)
-        sleep(30)
+        sleep(5)
 
 if __name__ == '__main__':
     main()

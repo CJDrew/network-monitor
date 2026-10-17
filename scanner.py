@@ -5,9 +5,9 @@ from typing import Optional
 @dataclass
 class scan_result:
     loss_pct: float
-    average: Optional[float]
-    min: Optional[float]
-    max: Optional[float]
+    average: Optional[float] = None
+    min: Optional[float] = None
+    max: Optional[float] = None
 
 class scanner:
     def __init__(self, test_url):
