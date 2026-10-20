@@ -20,6 +20,14 @@ TIMEFRAMES = {
     "1w":  ("%a %d",    7, timedelta(weeks=1),    "30min"),
 }
 
+# Display order and labels. Keys cover both how the column might be stored:
+# the enum's integer value or its name.
+MONITORS = [
+    ("DNS", "DNS (hostname)"),
+    ("STATIC_IP", "Static IP"),
+]
+MONITOR_ALIASES = {1: "DNS", 2: "STATIC_IP", "DNS": "DNS", "STATIC_IP": "STATIC_IP"}
+
 
 def _format_df(df, columns):
     return (
@@ -102,13 +110,23 @@ def dashboard():
         .dt.tz_convert(TZ)
         .dt.tz_localize(None)
     )
-    df = _resample(df.set_index("timestamp"), bucket)
+    df["monitor_type"] = df["monitor_type"].map(MONITOR_ALIASES)
 
-    st.subheader("Latency (ms)")
-    latency_chart(df, ["avg_ms", "min_ms", "max_ms"], "ms", timeframe, domain)
+    for key, label in MONITORS:
+        st.header(label)
 
-    st.subheader("Packet loss (%)")
-    loss_chart(df, ["loss_pct"], "%", timeframe, domain)
+        sub = df[df["monitor_type"] == key].drop(columns="monitor_type")
+        if sub.empty:
+            st.info(f"No {label} observations in this window.")
+            continue
+
+        sub = _resample(sub.set_index("timestamp"), bucket)
+
+        st.subheader("Latency (ms)")
+        latency_chart(sub, ["avg_ms", "min_ms", "max_ms"], "ms", timeframe, domain)
+
+        st.subheader("Packet loss (%)")
+        loss_chart(sub, ["loss_pct"], "%", timeframe, domain)
 
 
 dashboard()
